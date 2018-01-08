@@ -8,11 +8,9 @@ class InputLine extends React.Component{
   render(){
     return(
       <div className="inputLine">
-        <form onSubmit={this.handleSubmit}>
           <input type='text' placeholder='task'/>
-          <input type='submit' value="Add todo"/>
-        </form>
-    </div>
+          <input type='submit' value="Add todo" onClick={() => this.props.submit("test task")}/>
+      </div>
     )
   }
 }
