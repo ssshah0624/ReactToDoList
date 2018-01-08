@@ -10,10 +10,12 @@ class InputLine extends React.Component{
 
   render(){
     return(
-      <form onSubmit={this.handleSubmit}>
-        <input type='text' placeholder='task'/>
-        <input type='submit' value="Add todo"/>
-      </form>
+      <div className="inputLine">
+        <form onSubmit={this.handleSubmit}>
+          <input type='text' placeholder='task'/>
+          <input type='submit' value="Add todo"/>
+        </form>
+    </div>
     )
   }
 }
@@ -27,7 +29,7 @@ class Todo extends React.Component{
   render(){
     return(
       <div>
-        <li><button type="button">X</button>{this.props.completed ? <strike>{this.props.task}</strike> : this.props.task}</li>
+        <li><button type="button">X</button><span className="task">{this.props.completed ? <strike>{this.props.task}</strike> : this.props.task}</span></li>
       </div>
     )
   }
@@ -42,7 +44,7 @@ class TodoList extends React.Component{
   render(){
     return(
       <ul>
-        {dummyData.map((task) => (<Todo task={task.taskText} completed={task.completed}/>))}
+        {this.props.todos.map((task) => (<Todo task={task.taskText} completed={task.completed}/>))}
       </ul>
     )
   }
@@ -51,13 +53,23 @@ class TodoList extends React.Component{
 class TodoApp extends React.Component{
   constructor(props){
     super(props)
+
+    this.state={
+      todos:[],
+    }
+  }
+
+  componentDidMount(){
+    this.setState({
+      todos: dummyData,
+    });
   }
 
   render(){
     return(
       <div>
         <InputLine/>
-        <TodoList/>
+        <TodoList todos={this.state.todos}/>
       </div>
     )
   }
