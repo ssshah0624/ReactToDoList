@@ -5,8 +5,6 @@ import axios from 'axios'
 
 const dbUrl = "http://localhost:3000/db";
 
-let dummyData = [{ taskText: "Pick up Maria money", completed: true }, { taskText: "Text Jesse about SEO content writer", completed: true }, { taskText: "Report back on tech interview", completed: false }]
-
 class TodoApp extends React.Component{
   constructor(props){
     super(props)
@@ -17,18 +15,18 @@ class TodoApp extends React.Component{
   }
 
   componentDidMount(){
-    this.setState({
-      todos: dummyData,
-    });
+
+    var a = this
+    axios.get(dbUrl+'/all')
+      .then(function(response){
+        a.setState({todos: response.data})
+      })
+      .catch(function(error){
+        console.log("error compdidmount:", error)
+      })
   }
 
   addTodo(todo){
-    // if(todo){
-    //   dummyData = dummyData.concat({taskText: todo, completed: false})
-    //   this.setState({
-    //     todos: dummyData
-    //   })
-    // }
     var a = this
     if(todo){
       axios.post(dbUrl + "/add", {taskText: todo})
@@ -44,20 +42,62 @@ class TodoApp extends React.Component{
       }
   }
 
-  removeTodo(index){
-    let a = dummyData;
-    a.splice(index,1);
-    dummyData = a;
-    this.setState({
-      todos: dummyData
-    })
+  removeTodo(id){
+    // let a = dummyData;
+    // a.splice(index,1);
+    // dummyData = a;
+    // this.setState({
+    //   todos: dummyData
+    // })
+
+    var a = this;
+    axios.post(dbUrl+'/remove', {id: id})
+      .then(function(response){
+        let index;
+        let temp = a.state.todos;
+        for(var i=0; i<temp.length; i++){
+          if(temp[i]._id === id){
+              index = i;
+          }
+        }
+
+        temp.splice(index, 1);
+        a.setState({
+          todos: temp
+        })
+
+      })
+      .catch(function(error){
+        console.log('error: ', error)
+      })
+
+
   }
 
-  toggleState(index){
-    dummyData[index].completed = !dummyData[index].completed
-    this.setState({
-      todos: dummyData
-    })
+  toggleState(id){
+    // dummyData[index].completed = !dummyData[index].completed
+    // this.setState({
+    //   todos: dummyData
+    // })
+    var a = this
+    axios.post(dbUrl+'/toggle', {id: id})
+      .then(function(response){
+        let index;
+        let temp = a.state.todos;
+        for(var i=0; i<temp.length; i++){
+          if(temp[i]._id === id){
+              index = i;
+          }
+        }
+
+        temp[index].completed = !temp[index].completed
+
+        a.setState({todos: temp})
+      })
+      .catch(function(error){
+        console.log('error: ', error)
+      })
+
   }
 
   render(){

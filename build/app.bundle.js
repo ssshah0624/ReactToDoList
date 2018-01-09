@@ -1654,8 +1654,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var dbUrl = "http://localhost:3000/db";
 
-var dummyData = [{ taskText: "Pick up Maria money", completed: true }, { taskText: "Text Jesse about SEO content writer", completed: true }, { taskText: "Report back on tech interview", completed: false }];
-
 var TodoApp = function (_React$Component) {
   _inherits(TodoApp, _React$Component);
 
@@ -1673,19 +1671,17 @@ var TodoApp = function (_React$Component) {
   _createClass(TodoApp, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.setState({
-        todos: dummyData
+
+      var a = this;
+      _axios2.default.get(dbUrl + '/all').then(function (response) {
+        a.setState({ todos: response.data });
+      }).catch(function (error) {
+        console.log("error compdidmount:", error);
       });
     }
   }, {
     key: 'addTodo',
     value: function addTodo(todo) {
-      // if(todo){
-      //   dummyData = dummyData.concat({taskText: todo, completed: false})
-      //   this.setState({
-      //     todos: dummyData
-      //   })
-      // }
       var a = this;
       if (todo) {
         _axios2.default.post(dbUrl + "/add", { taskText: todo }).then(function (response) {
@@ -1700,20 +1696,54 @@ var TodoApp = function (_React$Component) {
     }
   }, {
     key: 'removeTodo',
-    value: function removeTodo(index) {
-      var a = dummyData;
-      a.splice(index, 1);
-      dummyData = a;
-      this.setState({
-        todos: dummyData
+    value: function removeTodo(id) {
+      // let a = dummyData;
+      // a.splice(index,1);
+      // dummyData = a;
+      // this.setState({
+      //   todos: dummyData
+      // })
+
+      var a = this;
+      _axios2.default.post(dbUrl + '/remove', { id: id }).then(function (response) {
+        var index = void 0;
+        var temp = a.state.todos;
+        for (var i = 0; i < temp.length; i++) {
+          if (temp[i]._id === id) {
+            index = i;
+          }
+        }
+
+        temp.splice(index, 1);
+        a.setState({
+          todos: temp
+        });
+      }).catch(function (error) {
+        console.log('error: ', error);
       });
     }
   }, {
     key: 'toggleState',
-    value: function toggleState(index) {
-      dummyData[index].completed = !dummyData[index].completed;
-      this.setState({
-        todos: dummyData
+    value: function toggleState(id) {
+      // dummyData[index].completed = !dummyData[index].completed
+      // this.setState({
+      //   todos: dummyData
+      // })
+      var a = this;
+      _axios2.default.post(dbUrl + '/toggle', { id: id }).then(function (response) {
+        var index = void 0;
+        var temp = a.state.todos;
+        for (var i = 0; i < temp.length; i++) {
+          if (temp[i]._id === id) {
+            index = i;
+          }
+        }
+
+        temp[index].completed = !temp[index].completed;
+
+        a.setState({ todos: temp });
+      }).catch(function (error) {
+        console.log('error: ', error);
       });
     }
   }, {
@@ -2873,10 +2903,10 @@ var TodoList = function (_React$Component) {
         'ul',
         null,
         this.props.todos.map(function (task, index) {
-          return _react2.default.createElement(_Todo2.default, { task: task.taskText, completed: task.completed, xClick: function xClick() {
-              return _this2.props.todoXClick(index);
+          return _react2.default.createElement(_Todo2.default, { key: task._id, task: task.task, completed: task.completed, xClick: function xClick() {
+              return _this2.props.todoXClick(task._id);
             }, toggle: function toggle() {
-              return _this2.props.toggle(index);
+              return _this2.props.toggle(task._id);
             } });
         })
       );
