@@ -44,6 +44,9 @@ router.post('/toggle', (req, res) => {
   TodoItem.findOne({_id: req.body.id})
     .then((item) => {
       item.completed = !item.completed
+      return item
+    })
+    .then((item) => {
       item.save((err, item) => {
         if(err){
           res.status(500).send(err);

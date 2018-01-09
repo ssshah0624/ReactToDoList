@@ -1729,10 +1729,10 @@ var TodoApp = function (_React$Component) {
       // this.setState({
       //   todos: dummyData
       // })
-      var a = this;
+
       _axios2.default.post(dbUrl + '/toggle', { id: id }).then(function (response) {
         var index = void 0;
-        var temp = a.state.todos;
+        var temp = this.state.todos;
         for (var i = 0; i < temp.length; i++) {
           if (temp[i]._id === id) {
             index = i;
@@ -1741,8 +1741,8 @@ var TodoApp = function (_React$Component) {
 
         temp[index].completed = !temp[index].completed;
 
-        a.setState({ todos: temp });
-      }).catch(function (error) {
+        this.setState({ todos: temp });
+      }.bind(this)).catch(function (error) {
         console.log('error: ', error);
       });
     }

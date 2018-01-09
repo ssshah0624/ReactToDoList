@@ -79,11 +79,11 @@ class TodoApp extends React.Component{
     // this.setState({
     //   todos: dummyData
     // })
-    var a = this
+
     axios.post(dbUrl+'/toggle', {id: id})
-      .then(function(response){
+      .then( (function(response){
         let index;
-        let temp = a.state.todos;
+        let temp = this.state.todos;
         for(var i=0; i<temp.length; i++){
           if(temp[i]._id === id){
               index = i;
@@ -92,8 +92,8 @@ class TodoApp extends React.Component{
 
         temp[index].completed = !temp[index].completed
 
-        a.setState({todos: temp})
-      })
+        this.setState({todos: temp})
+      }).bind(this) )
       .catch(function(error){
         console.log('error: ', error)
       })
